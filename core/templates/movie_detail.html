@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4">
+    <h1 class="text-2xl font-bold mb-4">{{ movie.title }}</h1>
+<p class="mb-4">{{ movie.description }}</p>
+
+<h2 class="text-xl font-semibold mb-2">Available Showtimes</h2>
+<ul class="space-y-2">
+    {% for show in showtimes %}
+        <li class="border p-2 rounded">
+            {{ show.date }} at {{ show.time }} — {{ show.hall }}
+            <a href="javascript:void(0);" onclick="openSeatModal({{ show.id }})" class="text-blue-500 ml-2">Select Seats</a>
+        </li>
+    {% empty %}
+        <li>No showtimes available.</li>
+    {% endfor %}
+    <!-- Modal Container -->
+<div id="seatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white rounded p-6 w-[90%] max-w-2xl relative">
+      <h2 class="text-xl font-bold mb-4">Select Seats</h2>
+      <div id="seatGrid" class="grid grid-cols-10 gap-2 mb-4"></div>
+      <button id="confirmBooking" class="bg-blue-500 text-white px-4 py-2 rounded">Confirm Booking</button>
+      <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-600">✖</button>
+    </div>
+  </div>
+  
+  <script>
+    let selectedSeats = []
+    let showtimeId = null
+  
+    function openSeatModal(id) {
+      showtimeId = id;
+      selectedSeats = [];
+      fetch(`/api/showtime/${id}/seats/`)
+        .then(res => res.json())
+        .then(data => {
+          const grid = document.getElementById('seatGrid');
+          grid.innerHTML = '';
+          data.seats.forEach(seat => {
+            const seatEl = document.createElement('div');
+            seatEl.textContent = seat.row + seat.number;
+            seatEl.className = 'p-2 text-center rounded cursor-pointer ' +
+              (data.booked.includes(seat.id) ? 'bg-red-400 text-white pointer-events-none' : 'bg-green-200 hover:bg-green-300');
+            seatEl.dataset.id = seat.id;
+            seatEl.onclick = () => toggleSeat(seatEl);
+            grid.appendChild(seatEl);
+          });
+          document.getElementById('seatModal').classList.remove('hidden');
+        });
+    }
+  
+    function toggleSeat(el) {
+      const id = parseInt(el.dataset.id);
+      if (selectedSeats.includes(id)) {
+        selectedSeats = selectedSeats.filter(s => s !== id);
+        el.classList.remove('bg-blue-500', 'text-white');
+        el.classList.add('bg-green-200');
+      } else {
+        selectedSeats.push(id);
+        el.classList.remove('bg-green-200');
+        el.classList.add('bg-blue-500', 'text-white');
+      }
+    }
+  
+    function closeModal() {
+      document.getElementById('seatModal').classList.add('hidden');
+    }
+  
+    document.getElementById('confirmBooking').onclick = () => {
+      fetch('/api/book/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        body: JSON.stringify({ showtime_id: showtimeId, seats: selectedSeats })
+      }).then(res => res.json()).then(data => {
+        if (data.message) {
+          alert(data.message);
+          window.location.href = '/my-bookings/';
+        } else {
+          alert(data.error);
+        }
+      });
+    }
+  </script>
+  
+</ul>
+
+<a href="{% url 'home' %}" class="inline-block mt-4 text-gray-600 hover:underline">← Back to Movies</a>
+
+</body>
+
+</html>

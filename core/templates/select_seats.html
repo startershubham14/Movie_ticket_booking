@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4">
+    <h1 class="text-xl font-bold mb-4">Select Seats for {{ showtime.movie.title }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="grid grid-cols-10 gap-2">
+            {% for seat in all_seats %}
+                {% if seat.id in booked_seats %}
+                    <label class="bg-red-400 text-white rounded p-2 text-center">
+                        {{ seat.row }}{{ seat.number }} <br>Booked
+                    </label>
+                {% else %}
+                    <label class="bg-green-200 rounded p-2 text-center">
+                        <input type="checkbox" name="seats" value="{{ seat.id }}" class="mr-1">
+                        {{ seat.row }}{{ seat.number }}
+                    </label>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Confirm Booking</button>
+    </form>
+    
+    <a href="{% url 'movie_detail' showtime.movie.id %}" class="inline-block mt-4 text-gray-600 hover:underline">← Back</a>
+    
+</body>
+
+</html>

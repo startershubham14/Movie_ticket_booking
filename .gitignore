@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.log
+
+# Virtual environment
+myenv/
+env/
+venv/
+
+# Django specific
+*.sqlite3
+db.sqlite3
+staticfiles/
+
+# VSCode & IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+
+# Model files
+*.joblib
+*.pkl
+*.h5
+*.ckpt
+
+# JSON model output
+*.json
+
+# Local database
+*.db
+
+# Cache or temp
+*.cache
+*.bak
+*.swp

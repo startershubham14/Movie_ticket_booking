@@ -1,0 +1,27 @@
+<h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
+
+<div class="grid grid-cols-3 gap-6 mb-6">
+    <div class="bg-white shadow p-4 rounded">
+        <h2 class="text-lg font-semibold">Total Movies</h2>
+        <p class="text-3xl">{{ total_movies }}</p>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+        <h2 class="text-lg font-semibold">Showtimes</h2>
+        <p class="text-3xl">{{ total_showtimes }}</p>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+        <h2 class="text-lg font-semibold">Bookings</h2>
+        <p class="text-3xl">{{ total_bookings }}</p>
+    </div>
+</div>
+
+<h2 class="text-xl font-bold mb-2">Top Booked Movies</h2>
+<ul class="list-disc pl-5">
+    {% for movie in top_movies %}
+        <li>{{ movie.title }} — {{ movie.num_bookings }} bookings</li>
+    {% empty %}
+        <li>No bookings yet.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'home' %}" class="inline-block mt-4 text-gray-600 hover:underline">← Back to Home</a>
